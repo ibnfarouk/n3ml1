@@ -18,17 +18,23 @@
             <tr>
                 <td>{{ $loop->iteration }}</td>
                 <td>
-                    <a href="{{ url(route('products.show',$loop->index)) }}">
-                        {{ $product['name'] }}
+                    <a href="{{ url(route('products.show',$product->id)) }}">
+                        {{ $product->name }}
                     </a>
                 </td>
-                <td>{{ $product['desc'] }}</td>
-                <td>${{ $product['price'] }}</td>
-                <td>{{ $product['category'] }}</td>
+                <td>{{ $product->desc }}</td>
+                <td>${{ $product->price }}</td>
+                <td>{{ $product->category }}</td>
                 <td>
-                    <a href="{{ url(route('products.edit', $loop->index)) }}">Edit</a>
+                    <a class="btn btn-success" href="{{ url(route('products.edit', $product->id)) }}">Edit</a>
+                    <form action="{{ url(route('products.destroy', $product->id)) }}" method="post">
+                        @method('DELETE')
+                        @csrf
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
                 </td>
             </tr>
         @endforeach
     </table>
+    {{ $products->links() }}
 @endsection

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ProductRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Unique;
 
@@ -14,25 +15,8 @@ class ProductController extends Controller
      */
     public function index()
     {
-//        session()->put([
-//            'products' => [
-//                [
-//                    'name' => "item1",
-//                    "desc" => "kza",
-//                    "price" => 10,
-//                    "category" => "Cloths"
-//                ],
-//                [
-//                    'name' => "item2",
-//                    "desc" => "kza 2",
-//                    "price" => 15,
-//                    "category" => "Food"
-//                ],
-//            ]
-//        ]);
-        //dd(session()->all());
-        // array of products [['name' => "kza", 'desc' => 'kza kza']]
-        $products = session()->get('products', []);
+        $products = DB::table('products')->paginate(10);
+        //dd($products);
         return view('products.index')->with(compact('products'));
     }
 
@@ -49,29 +33,7 @@ class ProductController extends Controller
      */
     public function store(ProductRequest $request)
     {
-        // validation
-        // Validator -- validator()->make()
-//        $validator = validator($request->all(),[
-//            'name' => ['required','alpha'],
-//            'desc' => 'required'
-//        ]);
-//        //
-//        if ($validator->fails()){
-//            dd($validator->errors());
-//        }
-//        dd("pass");
-//        $request->validate([
-//            'name' => ['required','alpha','unique:products,f_name'],
-//            'desc' => 'required'
-//        ],[
-////            'name.required' => 'The product name is required'
-//        ]);
-
-//        dd($request->validated());
-        // store product
-        session()->push('products',$request->validated());
-//        dd(session()->all());
-        // return redirect index
+        DB::table('products')->insert($request->validated());
         return to_route('products.index');
     }
 
@@ -80,10 +42,7 @@ class ProductController extends Controller
      */
     public function show(string $id)
     {
-        if (!isset(session('products')[$id])){
-            abort(404);
-        }
-        $product = session('products')[$id];
+        $product = DB::table('products')->find($id);
         return view('products.show',compact('product'));
     }
 
@@ -92,10 +51,7 @@ class ProductController extends Controller
      */
     public function edit(string $id)
     {
-        if (!isset(session('products')[$id])){
-            abort(404);
-        }
-        $product = session('products')[$id];
+        $product = DB::table('products')->find($id);
 
         return view('products.edit', compact('product','id'));
     }
@@ -105,10 +61,9 @@ class ProductController extends Controller
      */
     public function update(ProductRequest $request, string $id)
     {
-        $products = session('products');
-        $data = $request->validated();
-        $products[$id] = $data;
-        session()->put('products', $products);
+        $product = DB::table('products')->where('id',$id)
+        ->update($request->validated());
+
         return to_route('products.index');
     }
 
@@ -117,6 +72,8 @@ class ProductController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $product = DB::table('products')->where('id',$id)
+            ->delete();
+        return back();
     }
 }
