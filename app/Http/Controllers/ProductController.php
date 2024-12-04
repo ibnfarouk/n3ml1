@@ -3,6 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProductRequest;
+use App\Models\Category;
+use App\Models\NationalId;
+use App\Models\Product;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -15,7 +19,37 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = DB::table('products')->paginate(10);
+
+        $product = Product::with(['categories' => function ($query) {
+
+        }])->find(1);
+//        $product->load('categories');
+
+        dd($product);
+        // eager loading
+//        $cats = [3,5,6];
+//        $product = Product::find(1);
+        // attach
+//        $product->categories()->attach([3,6]);
+//        $product->categories()->detach([3,6]);
+//        $product->categories()->sync([3,4]);
+//        $var = $product->categories()->toggle([3,4,6]);
+
+//        $data = Product::where('rate', '>', 4)->orWhereDoesntHave('categories', function ($query){
+//            $query->where('name','sed');
+//        })->get();
+//        dd($data);
+
+
+        // has - whereHas
+        // doesntHave - whereDoesntHave
+
+
+//        dd($var);
+
+        $products = Product::search()->latest()->with('categories')->paginate(10);
+//        dd($products);
+//        dd($products->first()->price);
         //dd($products);
         return view('products.index')->with(compact('products'));
     }
@@ -25,7 +59,8 @@ class ProductController extends Controller
      */
     public function create()
     {
-        return view('products.create');
+        $categories = Category::all();
+        return view('products.create', compact('categories'));
     }
 
     /**
@@ -33,7 +68,20 @@ class ProductController extends Controller
      */
     public function store(ProductRequest $request)
     {
-        DB::table('products')->insert($request->validated());
+//        DB::table('products')->insert($request->validated());
+
+//        $product = new Product();
+//        $product->name = "TEst";
+//        $product->desc = "lorem ipsum";
+//        $product->price = 100.99;
+//        $product->save();
+
+        $product = Product::create($request->validated());
+
+        $product->categories()->attach($request->categories);
+
+//        dd($product);
+
         return to_route('products.index');
     }
 
@@ -42,7 +90,7 @@ class ProductController extends Controller
      */
     public function show(string $id)
     {
-        $product = DB::table('products')->find($id);
+        $product = Product::find($id);
         return view('products.show',compact('product'));
     }
 
@@ -51,7 +99,7 @@ class ProductController extends Controller
      */
     public function edit(string $id)
     {
-        $product = DB::table('products')->find($id);
+        $product = Product::findOrFail($id);
 
         return view('products.edit', compact('product','id'));
     }
@@ -61,8 +109,8 @@ class ProductController extends Controller
      */
     public function update(ProductRequest $request, string $id)
     {
-        $product = DB::table('products')->where('id',$id)
-        ->update($request->validated());
+        $product = Product::findOrFail($id);
+        $isUpdated = $product->update($request->validated());
 
         return to_route('products.index');
     }
@@ -72,8 +120,8 @@ class ProductController extends Controller
      */
     public function destroy(string $id)
     {
-        $product = DB::table('products')->where('id',$id)
-            ->delete();
+        $product = Product::findOrFail($id);
+        $product->delete();
         return back();
     }
 }

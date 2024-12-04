@@ -42,4 +42,14 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function nationalId()
+    {
+        return $this->hasOne(NationalId::class, 'user_id', 'id');
+    }
+
+    public function nationalIds()
+    {
+        return $this->hasMany(NationalId::class);
+    }
 }

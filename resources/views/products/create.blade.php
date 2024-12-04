@@ -30,7 +30,12 @@
         </div>
         <div class="mb-3">
             <label for="category" class="form-label">category</label>
-            <input name="category" type="text" class="form-control" id="category" placeholder="Product desc">
+            <select class="form-control" name="categories[]" id="" multiple>
+                @foreach($categories as $category)
+                    <option value="{{ $category->id }}">{{ $category->name }}</option>
+                @endforeach
+
+            </select>
         </div>
         <div class="mb-3">
             <button class="btn btn-primary" type="submit">Create</button>

@@ -24,7 +24,11 @@
                 </td>
                 <td>{{ $product->desc }}</td>
                 <td>${{ $product->price }}</td>
-                <td>{{ $product->category }}</td>
+                <td>
+                    @foreach($product->categories as $category)
+                        <button class="btn btn-info m-1">{{ $category->name }}</button>
+                    @endforeach
+                </td>
                 <td>
                     <a class="btn btn-success" href="{{ url(route('products.edit', $product->id)) }}">Edit</a>
                     <form action="{{ url(route('products.destroy', $product->id)) }}" method="post">
