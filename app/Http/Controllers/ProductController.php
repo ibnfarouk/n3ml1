@@ -3,11 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProductRequest;
+use App\Http\Resources\ProductResource;
 use App\Models\Category;
+use App\Models\Comment;
 use App\Models\NationalId;
+use App\Models\Post;
 use App\Models\Product;
+use App\Models\Tag;
 use App\Models\User;
+use App\Models\Video;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Unique;
@@ -19,13 +25,6 @@ class ProductController extends Controller
      */
     public function index()
     {
-
-        $product = Product::with(['categories' => function ($query) {
-
-        }])->find(1);
-//        $product->load('categories');
-
-        dd($product);
         // eager loading
 //        $cats = [3,5,6];
 //        $product = Product::find(1);
@@ -47,8 +46,7 @@ class ProductController extends Controller
 
 //        dd($var);
 
-        $products = Product::search()->latest()->with('categories')->paginate(10);
-//        dd($products);
+        $products = Product::search()->latest()->with('categories')->paginate();
 //        dd($products->first()->price);
         //dd($products);
         return view('products.index')->with(compact('products'));
@@ -79,6 +77,14 @@ class ProductController extends Controller
         $product = Product::create($request->validated());
 
         $product->categories()->attach($request->categories);
+
+
+        if ($request->hasFile('photo')){
+            $path = $request->file('photo')->store('products', 'public');
+            $product->update([
+                'photo' => $path
+            ]);
+        }
 
 //        dd($product);
 

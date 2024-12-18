@@ -8,6 +8,7 @@
     <table class="table table-bordered">
         <tr>
             <th>#</th>
+            <th>Photo</th>
             <th>name</th>
             <th>Desc</th>
             <th>price</th>
@@ -17,6 +18,9 @@
         @foreach($products as $product)
             <tr>
                 <td>{{ $loop->iteration }}</td>
+                <td>
+                    <img src="{{ Storage::url($product->photo) }}" alt="" style="height: 50px">
+                </td>
                 <td>
                     <a href="{{ url(route('products.show',$product->id)) }}">
                         {{ $product->name }}

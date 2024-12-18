@@ -12,7 +12,7 @@
     @include('partials.errors')
 
     <!-- Create Post Form -->
-    <form action="{{ url(route('products.store')) }}" method="post">
+    <form action="{{ url(route('products.store')) }}" method="post" enctype="multipart/form-data">
 {{--        <input type="hidden" value="{{ csrf_token() }}" name="_token">--}}
 {{--        {{ csrf_field() }}--}}
         @csrf
@@ -27,6 +27,10 @@
         <div class="mb-3">
             <label for="price" class="form-label">price</label>
             <input name="price" type="text" class="form-control" id="price" placeholder="Product desc">
+        </div>
+        <div class="mb-3">
+            <label for="photo" class="form-label">Photo</label>
+            <input name="photo" type="file" class="form-control" id="photo" >
         </div>
         <div class="mb-3">
             <label for="category" class="form-label">category</label>

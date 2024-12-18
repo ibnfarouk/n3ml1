@@ -45,11 +45,19 @@ class User extends Authenticatable
 
     public function nationalId()
     {
-        return $this->hasOne(NationalId::class, 'user_id', 'id');
+        // latestOfMany()  max id
+        // oldestOfMany() min id
+        return $this->nationalIds()->one()->ofMany('');
     }
 
     public function nationalIds()
     {
         return $this->hasMany(NationalId::class);
     }
+
+
+    // Channel
+    // hasMany(Message)
+    // hasOne(Message)->latestOfMany()
+    // Messages
 }
